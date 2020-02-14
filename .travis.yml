@@ -8,5 +8,5 @@ install:
 # command to run tests
 script:
   - pytest
-  - pylink
   - pytest --cov
+  - pylint ./twitter_preprocessor.py
