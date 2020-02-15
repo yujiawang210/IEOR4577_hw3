@@ -20,7 +20,7 @@ class TwitterPreprocessor:
     """define twitter preprocessor Class"""
 
     # - dunder function -
-    def __init__(self, text: str, max_length_tweet=30, max_length_dictionary=1000):
+    def __init__(self, text: str, max_length_tweet=30, max_length_dictionary=100000):
         self.text = text
         self.max_length_tweet = max_length_tweet
         self.max_length_dictionary = max_length_dictionary
@@ -93,8 +93,9 @@ class TwitterPreprocessor:
 
     def replace_token_with_index(self):
         """replacing tokens with index"""
+        emb_index = dict(list(EMB_INDEX.items())[:self.max_length_dictionary])
         for i in range(len(self.text)):
-            self.text[i] = EMB_INDEX[self.text[i]]
+            self.text[i] = emb_index[self.text[i]]
         return self
 
     def pad_sequence(self):
