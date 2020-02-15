@@ -5,7 +5,7 @@ import os
 from nltk import re
 from nltk.tokenize import TweetTokenizer
 
-GLOVE_DIM = 100
+GLOVE_DIM = 25
 ROOT_PATH = os.getcwd()
 GLOVE_FILE = '/glove.twitter.27B/glove.twitter.27B.' + str(GLOVE_DIM) + 'd.txt'
 EMB_INDEX = {}
