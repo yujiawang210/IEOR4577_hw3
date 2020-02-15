@@ -10,9 +10,8 @@ ROOT_PATH = os.getcwd()
 GLOVE_FILE = '/glove.twitter.27B/glove.twitter.27B.' + str(GLOVE_DIM) + 'd.txt'
 EMB_INDEX = {}
 GLOVE = open(ROOT_PATH+GLOVE_FILE)
-for row, line in enumerate(GLOVE):
-    values = line.split()
-    word = values[0]
+for row, value in enumerate(GLOVE):
+    word = value.split('\n')[0]
     EMB_INDEX[word] = row
 GLOVE.close()
 
@@ -20,7 +19,7 @@ class TwitterPreprocessor:
     """define twitter preprocessor Class"""
 
     # - dunder function -
-    def __init__(self, text: str, max_length_tweet=30, max_length_dictionary=100000):
+    def __init__(self, text: str, max_length_tweet=30, max_length_dictionary=5000):
         self.text = text
         self.max_length_tweet = max_length_tweet
         self.max_length_dictionary = max_length_dictionary
