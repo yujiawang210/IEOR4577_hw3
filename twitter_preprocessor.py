@@ -2,24 +2,49 @@
 Tweets Preprocessor
 """
 import os
+import zipfile
 from nltk import re
 from nltk.tokenize import TweetTokenizer
 
-GLOVE_DIM = 25
+# load GloVe embedding dictionary
+EMB_DIC = {}
+
 ROOT_PATH = os.getcwd()
-GLOVE_FILE = '/glove.twitter.27B/glove.twitter.27B.' + str(GLOVE_DIM) + 'd.txt'
-EMB_INDEX = {}
-GLOVE = open(ROOT_PATH+GLOVE_FILE)
-for row, value in enumerate(GLOVE):
-    word = value.split('\n')[0]
-    EMB_INDEX[word] = row
-GLOVE.close()
+ARCHIVE_PATH = os.path.join(ROOT_PATH, "glove.twitter.27B.zip")
+INSIDE_PATH = "glove.twitter.27B/glove.twitter.27B.25d.txt"
+
+if ".zip" in ARCHIVE_PATH:
+    ARCHIVE = zipfile.ZipFile(ARCHIVE_PATH, "r")
+    EMBEDDINGS = ARCHIVE.read(INSIDE_PATH).decode("utf8").split("\n")
+else:
+    EMBEDDINGS = open(ARCHIVE_PATH, "r", encoding='utf8').read().split("\n")
+
+for index, row in enumerate(EMBEDDINGS):
+    split = row.split(" ")
+    if index >= 50000:
+        pass
+    EMB_DIC[split[0]] = index + 1
+
+EMB_DIC.pop('<unknown>', None)
+EMB_DIC.pop('<unk>', None)
+EMB_DIC['<pad>'] = 0
+EMB_DIC['<unknown>'] = 1
+
+# GLOVE_DIM = 25
+# ROOT_PATH = os.getcwd()
+# GLOVE_FILE = '/glove.twitter.27B/glove.twitter.27B.' + str(GLOVE_DIM) + 'd.txt'
+# EMB_INDEX = {}
+# GLOVE = open(ROOT_PATH+GLOVE_FILE)
+# for row, value in enumerate(GLOVE):
+#     word = value.split('\n')[0]
+#     EMB_INDEX[word] = row
+# GLOVE.close()
 
 class TwitterPreprocessor:
     """define twitter preprocessor Class"""
 
     # - dunder function -
-    def __init__(self, text: str, max_length_tweet=30, max_length_dictionary=5000):
+    def __init__(self, text: str, max_length_tweet=20, max_length_dictionary=5000):
         self.text = text
         self.max_length_tweet = max_length_tweet
         self.max_length_dictionary = max_length_dictionary
@@ -92,7 +117,7 @@ class TwitterPreprocessor:
 
     def replace_token_with_index(self):
         """replacing tokens with index"""
-        emb_index = dict(list(EMB_INDEX.items())[:self.max_length_dictionary])
+        emb_index = dict(list(EMB_DIC.items())[:self.max_length_dictionary])
         for i in range(len(self.text)):
             self.text[i] = emb_index[self.text[i]]
         return self
@@ -105,3 +130,7 @@ class TwitterPreprocessor:
         elif len(self.text) >= max_length_tweet:
             self.text = self.text[0:max_length_tweet]
         return self
+
+    def preprocessing(self):
+        """run the preprocessing end to end"""
+        return self.clean_text().tokenize_text().replace_token_with_index().pad_sequence()

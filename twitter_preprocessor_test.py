@@ -47,3 +47,13 @@ class Tests(unittest.TestCase):
             result = tweet.text
             expected_result = test_case['expected']
             self.assertEqual(result, expected_result)
+
+    def test_preprocessing(self):
+        """testing end to end preprocessing"""
+        for test_case in getattr(TestCasesGenerator, 'preprocessing'):
+            tweet = TwitterPreprocessor(test_case['case'])
+            tweet.preprocessing()
+            result = tweet.text
+            expected_result = test_case['expected']
+            self.assertEqual(result, expected_result)
+
